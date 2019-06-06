@@ -8,6 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from mne.viz import tight_layout
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.manifold import TSNE
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import StratifiedKFold
@@ -94,6 +95,11 @@ lr = LogisticRegression(penalty='l1',
                         class_weight='balanced',
                         verbose=1)
 
+svm = SVC(class_weight='balanced',
+          gamma='scale',
+          C=1,
+          verbose=1)
+
 tsne = TSNE(n_components=3,
             init='random',
             verbose=1)
@@ -115,6 +121,7 @@ def report_MVPA_results(labels, preds,
     cm_normalized = cm.astype(float) / cm.sum(axis=1)[:, np.newaxis]
 
     # Plot confusion matrix
+    fig = plt.figure()
     plt.imshow(cm_normalized, interpolation='nearest', cmap=plt.cm.Blues)
     plt.title(title + 'Normalized Confusion matrix')
     plt.colorbar()
@@ -124,23 +131,21 @@ def report_MVPA_results(labels, preds,
     tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-    plt.show()
 
 
-preds = np.empty(len(labels))
+preds_xdawn = np.empty(len(labels))
 for train, test in cv.split(epochs, labels):
-    lr.fit(xdawn_pipeline.fit_transform(epochs[train]), labels[train])
-    preds[test] = lr.predict(xdawn_pipeline.transform(epochs[test]))
+    svm.fit(xdawn_pipeline.fit_transform(epochs[train]), labels[train])
+    preds_xdawn[test] = svm.predict(xdawn_pipeline.transform(epochs[test]))
 
-report_MVPA_results(labels, preds, title='xdawn_lr')
-
-preds = np.empty(len(labels))
+preds_pca = np.empty(len(labels))
 for train, test in cv.split(epochs, labels):
-    lr.fit(pca_pipeline.fit_transform(epochs_data[train]), labels[train])
-    preds[test] = lr.predict(pca_pipeline.transform(epochs_data[test]))
+    svm.fit(pca_pipeline.fit_transform(epochs_data[train]), labels[train])
+    preds_pca[test] = svm.predict(pca_pipeline.transform(epochs_data[test]))
 
-report_MVPA_results(labels, preds, title='pca_lr')
-
+report_MVPA_results(labels, preds_xdawn, title='xdawn_lr')
+report_MVPA_results(labels, preds_pca, title='pca_lr')
+plt.show()
 
 stophere
 '''
