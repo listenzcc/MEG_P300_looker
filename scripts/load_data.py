@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import pdb
 import mne
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,6 +27,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 root_dir = os.path.join('D:\\', 'RSVP_MEG_experiment')
 epochs_dir = os.path.join(root_dir, 'epochs_saver', 'epochs')
+result_dir = os.path.join(root_dir, 'extract_p300')
 
 '''
 # Function: load epochs.
@@ -115,6 +117,8 @@ def report_MVPA_results(labels, preds,
     print(title + 'reporting:')
     report = classification_report(labels, preds, target_names=target_names)
     print(report)
+    with open(os.path.join(result_dir, 'accs_%s.txt' % title), 'w') as f:
+        f.writelines(report)
 
     # Normalized confusion matrix
     cm = confusion_matrix(labels, preds)
@@ -143,8 +147,8 @@ for train, test in cv.split(epochs, labels):
     svm.fit(pca_pipeline.fit_transform(epochs_data[train]), labels[train])
     preds_pca[test] = svm.predict(pca_pipeline.transform(epochs_data[test]))
 
-report_MVPA_results(labels, preds_xdawn, title='xdawn_lr')
-report_MVPA_results(labels, preds_pca, title='pca_lr')
+report_MVPA_results(labels, preds_xdawn, title='xdawn_svm')
+report_MVPA_results(labels, preds_pca, title='pca_svm')
 plt.show()
 
 stophere
