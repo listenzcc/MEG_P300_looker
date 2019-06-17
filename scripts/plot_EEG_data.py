@@ -80,9 +80,8 @@ xdawn = mne.preprocessing.Xdawn(n_components=6)
 xdawn.fit(epochs)
 epochs_xdawn = xdawn.apply(epochs)
 
-
 for id in ['odd', 'norm']:
-    epochs_data_xdawn = xdawn.transform(epochs['odd'])
+    epochs_data_xdawn = xdawn.transform(epochs[id])
     fig, axes = plt.subplots(nrows=2, ncols=1)
     for j, e in enumerate(np.mean(epochs_data_xdawn, axis=0)):
         if j < 6:
