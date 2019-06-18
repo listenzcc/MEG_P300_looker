@@ -16,10 +16,10 @@ from matplotlib.backends.backend_pdf import PdfPages
 # Output: epochs_dir, dir of epochs fif files.
 '''
 time_stamp = time.strftime('%Y-%m-%d-%H-%M-%S')
-root_dir = os.path.join('D:\\', 'RSVP_MEG_experiment')
+root_dir = os.path.join('D:\\', 'RSVP_experiment')
 epochs_dir = os.path.join(root_dir, 'epochs_saver', 'epochs_0.1-7')
 result_dir = os.path.join(root_dir, 'extract_p300')
-pdf_path = os.path.join(result_dir, 'ts_joint_EEG_%s.pdf' % time_stamp)
+pdf_path = os.path.join(result_dir, 'ts_joint_EEG_raw_%s.pdf' % time_stamp)
 
 
 '''
@@ -32,12 +32,12 @@ tmin, tmax = 0, 1
 labels = None
 epochs_data = None
 epochs_list = []
-for i in [5, 7, 9]:
+for i in range(1, 11):  # [5, 7, 9]:
     '''
     # Function: Reading epochs from -epo.fif.
     # Output: epochs, resampled epochs.
     '''
-    epo_path = os.path.join(epochs_dir, 'eeg_mxl_epochs_%d-eposhift.fif' % i)
+    epo_path = os.path.join(epochs_dir, 'eeg_mxl_epochs_%d-epo.fif' % i)
 
     epochs = mne.read_epochs(epo_path, verbose=True)
     epochs.crop(tmin=tmin, tmax=tmax)
